@@ -3,13 +3,13 @@ services:
     image: 'postgres:latest'
     restart: unless-stopped
     environment:
-      - 'POSTGRES_DB=platzi_play_db'
+      - 'POSTGRES_DB=platzi-play_db'
       - 'POSTGRES_PASSWORD=2727'
       - 'POSTGRES_USER=dani'
     ports:
       - '5432:5432'
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql
 
 volumes:
   pgdata:
