@@ -1,11 +1,15 @@
 package com.platzi_play.persistence;
 
 import com.platzi_play.domain.dto.MovieDto;
+import com.platzi_play.domain.dto.UpdateMovieDto;
+import com.platzi_play.domain.exception.MovieAlredyExistsException;
 import com.platzi_play.domain.repository.MovieRepository;
 import com.platzi_play.persistence.crup.CrudMovieEntity;
+import com.platzi_play.persistence.entity.MovieEntity;
 import com.platzi_play.persistence.mapper.MovieMapper;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
@@ -22,5 +26,44 @@ public class MovieEntityRepository implements MovieRepository {
     @Override
     public List<MovieDto> getAll() {
         return this.movieMapper.toDtos(this.crudMovieEntity.findAll());
+    }
+
+    @Override
+    public MovieDto getById(Long id) {
+        MovieEntity movieEntity = this.crudMovieEntity.findById(id).orElse(null);
+        return this.movieMapper.toDto(movieEntity);
+    }
+
+    @Override
+    public MovieDto save(MovieDto movieDto) {
+        if( this.crudMovieEntity.findFirstByTitulo(movieDto.title())!=null){
+            throw new MovieAlredyExistsException(movieDto.title());
+        }
+
+
+
+        MovieEntity movieEntity = this.movieMapper.toEntity(movieDto);
+        movieEntity.setEstado("D");
+        return this.movieMapper.toDto(this.crudMovieEntity.save(movieEntity));
+    }
+
+    @Override
+    public MovieDto update(long id, UpdateMovieDto updateMovieDto) {
+        MovieEntity movieEntity = this.crudMovieEntity.findById(id).orElse(null);
+
+        if (movieEntity == null) return null;
+
+        movieEntity.setTitulo(updateMovieDto.title());
+        movieEntity.setFechaEstreno(updateMovieDto.releaseDate());
+        movieEntity.setClasificacion(BigDecimal.valueOf(updateMovieDto.rating()));
+
+
+        return this.movieMapper.toDto(this.crudMovieEntity.save(movieEntity));
+    }
+
+    @Override
+    public void delete(Long id) {
+        this.crudMovieEntity.deleteById(id);
+
     }
 }

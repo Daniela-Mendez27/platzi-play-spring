@@ -1,12 +1,14 @@
 package com.platzi_play.persistence.mapper;
 
 import com.platzi_play.domain.Genre;
+import org.mapstruct.Mapper; // <--- TE FALTABA ESTA
 import org.mapstruct.Named;
 
-public class GenreMapper {
+@Mapper(componentModel = "spring")
+public interface GenreMapper {
 
-    @Named("StringToGenre")
-    public static Genre stringToGenre(String genero) {
+    @Named("stringToGenre")
+    default Genre stringToGenre(String genero) {
         if (genero == null) return null;
 
         return switch (genero.toUpperCase()) {
@@ -21,7 +23,7 @@ public class GenreMapper {
     }
 
     @Named("genreToString")
-    public static String genreToString(Genre genre) {
+    default String genreToString(Genre genre) {
         if (genre == null) return null;
 
         return switch (genre) {
